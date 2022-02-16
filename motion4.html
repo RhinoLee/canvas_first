@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Motion4</title>
+  <style>
+    h1 {
+      text-align: center;
+    }
+
+    #stage {
+      display: block;
+      width: 800px;
+      height: 600px;
+      margin: 30px auto;
+      border: 1px solid;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>重力 Ay = Ay0 + G</h1>
+  <h1>反作用力 V = -V</h1>
+  <h1>摩擦力 V = V0 * F</h1>
+  <canvas id="stage" width="800" height="600"></canvas>
+
+
+  <script>
+    let canvas = document.querySelector("#stage")
+    let ctx = canvas.getContext("2d")
+    let time = 0
+
+    let gravity = 10 // 重力
+    let friction = 0.8 // 摩擦力
+
+    let ball = {
+      position: {
+        x: 400,
+        y: 300
+      },
+      radius: 10,
+      velocity: {
+        x: 0,
+        y: 0
+      },
+      acceleration: {
+        x: 0,
+        y: 0
+      }
+    }
+
+    function motion(offset) {
+      // 速度 = 初速度 + 加速度 * 時間
+      ball.velocity.x = ball.velocity.x + ball.acceleration.x
+      // 位移 = 速度 * 時間
+      ball.position.x = ball.position.x + ball.velocity.x * (offset / 1000)
+
+      ball.acceleration.y = ball.acceleration.y + gravity
+      // 速度 = 初速度 + 加速度 * 時間
+      ball.velocity.y = ball.velocity.y + ball.acceleration.y
+      // 位移 = 速度 * 時間
+      ball.position.y = ball.position.y + ball.velocity.y * (offset / 1000)
+
+      // 邊界判斷
+      if (ball.position.y > (canvas.height - ball.radius)) {
+        ball.position.y = canvas.height - ball.radius
+        ball.velocity.y = -ball.velocity.y * friction
+        ball.velocity.x = ball.velocity.x * friction
+      }
+
+      if (ball.position.x > canvas.width) {
+        ball.position.x = 0
+      } else if (ball.position.x < 0) {
+        ball.position.x = canvas.width
+      }
+
+      draw()
+    }
+
+    function draw() {
+      ctx.fillStyle = "black"
+      ctx.beginPath()
+      ctx.arc(ball.position.x, ball.position.y, ball.radius, 0, Math.PI * 2)
+      ctx.fill()
+    }
+
+    function render(t) {
+      console.log(t - time); // 16.xxxxxxxxx => 每 16 毫秒 render 一次 => 1000 / 16 = 62.5 FPS（每秒 render 62.5次）
+      ctx.clearRect(0, 0, 800, 600)
+      motion(t - time)
+      time = t
+
+      requestAnimationFrame(render)
+    }
+
+    requestAnimationFrame(render)
+
+    canvas.addEventListener("click", function () {
+      ball.velocity = { x: 0, y: 0 }
+      ball.acceleration = { x: 5, y: -200 }
+    })
+
+  </script>
+
+</body>
+
+</html>
