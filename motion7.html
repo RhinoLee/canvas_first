@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Motion7</title>
+  <style>
+    h1 {
+      text-align: center;
+    }
+
+    #stage {
+      display: block;
+      width: 800px;
+      height: 600px;
+      margin: 30px auto;
+      border: 1px solid;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Shoot Shoot Shoot</h1>
+  <canvas id="stage" width="800" height="600"></canvas>
+
+
+  <script>
+    let canvas = document.querySelector("#stage")
+    let ctx = canvas.getContext("2d")
+    let time = 0
+    let balls = []
+    let mouse = { x: 400, y: 300 }
+
+
+    function motion(offset) {
+
+      balls.forEach((ball, index) => {
+        ball.life -= 1
+
+        if (ball.life) {
+          ball.velocity.x += ball.acceleration.x
+          ball.position.x += ball.velocity.x * (offset / 1000)
+
+          ball.acceleration.y += 1
+          ball.velocity.y += ball.acceleration.y
+          ball.position.y += ball.velocity.y * (offset / 1000)
+
+          ctx.fillStyle = ball.color
+          ctx.beginPath()
+          ctx.arc(ball.position.x, ball.position.y, ball.radius, 0, Math.PI * 2)
+          ctx.fill()
+        } else {
+          delete balls.splice(index, 1)
+        }
+      })
+    }
+
+    function render(t) {
+      // console.log(t - time); // 16.xxxxxxxxx => 每 16 毫秒 render 一次 => 1000 / 16 = 62.5 FPS（每秒 render 62.5次）
+      canvas.width = canvas.width
+      motion(t - time)
+      time = t
+      requestAnimationFrame(render)
+    }
+
+    requestAnimationFrame(render)
+
+    canvas.addEventListener("mousemove", function (e) {
+      mouse = { x: e.offsetX, y: e.offsetY }
+    })
+
+    canvas.addEventListener("click", function (e) {
+      mouse = { x: e.offsetX, y: e.offsetY }
+      let angle;
+      let color = "#" + parseInt(Math.random() * 256 * 256 * (256 - 1)).toString(16)
+      for (let i = 0; i < 87; i++) {
+        angle = Math.random() * Math.PI * 2
+        balls.push({
+          life: 100,
+          position: {
+            x: mouse.x,
+            y: mouse.y
+          },
+          velocity: {
+            x: 0,
+            y: 0
+          },
+          acceleration: {
+            x: Math.cos(angle) * (Math.random() * 10 + 10),
+            y: Math.sin(angle) * (Math.random() * 10 + 10)
+          },
+          radius: 5,
+          color
+          // color: "#" + parseInt(Math.random() * 255 * 255 * 255).toString(16)
+        })
+      }
+
+    })
+
+
+  </script>
+
+</body>
+
+</html>
