@@ -50,11 +50,8 @@
           ctx.arc(ball.position.x, ball.position.y, ball.radius, 0, Math.PI * 2)
           ctx.fill()
         } else {
-          console.log("delete");
           balls.splice(index, 1)
         }
-
-        console.log(balls);
       })
     }
 
@@ -84,6 +81,8 @@
       let my = mouse.y - 300 // 對邊
       // Math.sqrt(mx * mx + my * my) // 斜邊
 
+      console.log(my);
+
       let ball = {
         active: true,
         angle: Math.atan(my / mx),
@@ -98,7 +97,7 @@
       if (mx < 0) {
         ball.velocity *= -1
       }
-
+      console.log(ball);
       balls.push(ball)
     })
 
